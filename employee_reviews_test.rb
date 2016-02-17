@@ -4,7 +4,7 @@ require 'minitest/pride'
 require 'active_record'
 ActiveRecord::Base.establish_connection(
   adapter:  'sqlite3',
-  database: 'development.sqlite3'
+  database: 'test.sqlite3'
 )
 
 require './employee_department_migration.rb'
@@ -12,17 +12,17 @@ require './department.rb'
 require './employee.rb'
 
 # This gets rid of all the migration output between your dots.
-# ActiveRecord::Migration.verbose = false
+ActiveRecord::Migration.verbose = false
 
 class EmployeeReviews < Minitest::Test
 
-  # def setup
-  #   begin EmployeeAndDepartmentMigration.migrate(:up); rescue; end
-  # end
-  #
-  # def teardown
-  #   EmployeeAndDepartmentMigration.migrate(:down)
-  # end
+  def setup
+    begin EmployeeAndDepartmentMigration.migrate(:up); rescue; end
+  end
+
+  def teardown
+    EmployeeAndDepartmentMigration.migrate(:down)
+  end
 
   def test_classes_exist
     assert Department
@@ -30,95 +30,72 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_can_create_new_department
-    setup
     a = Department.new(name: "Marketing")
     assert a
     assert_equal "Marketing", a.name
-    teardown
   end
 
   def test_can_create_new_employee
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert new_employee
-    teardown
   end
 
   def test_can_add_employee_to_a_department
-    setup
     a = Department.new(name: "Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     a.employees << new_employee
     assert_equal [new_employee], a.employees
-    teardown
   end
 
   def test_can_get_employee_name
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal "Dan", new_employee.name
-    teardown
   end
 
   def test_can_get_employee_salary
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 50000.00, new_employee.salary
-    teardown
   end
 
   def test_can_get_a_department_name
-    setup
     a = Department.new(name: "Marketing")
     assert_equal "Marketing", a.name
-    teardown
   end
 
   def test_total_department_salary
-    setup
     a = Department.new(name: "Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
     assert a.employees << new_employee
     assert a.employees << old_employee
     assert_equal 90000.00, a.department_salary
-    teardown
   end
 
   def test_add_employee_review
-    setup
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     assert xavier.add_employee_review(positive_review_one)
-    teardown
   end
 
   def test_set_employee_performance
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 4000.00)
     new_employee.set_employee_performance(true)
     old_employee.set_employee_performance(false)
     assert new_employee.satisfactory
     refute old_employee.satisfactory
-    teardown
   end
 
   def test_give_raise_by_percent
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 54000, new_employee.raise_by_percent(0.08)
-    teardown
   end
 
   def test_give_raise_by_amount
-    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 60000, new_employee.raise_by_amount(10000)
-    teardown
   end
 
   def test_department_raises_based_on_criteria
-    setup
     a = Department.new(name: "Marketing")
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
@@ -133,19 +110,15 @@ class EmployeeReviews < Minitest::Test
     assert_equal 70000.00, xavier.salary
     assert_equal 64000.00, new_employee.salary
     assert_equal 40000.00, old_employee.salary
-    teardown
   end
 
   def test_evaluate_employee_review
-    setup
     xavier = Employee.new(name: 'Xavier', email: 'ProfX@marvel.com', phone: '911', salary: 70000.00)
     xavier.add_employee_review(positive_review_one)
     assert xavier.satisfactory
-    teardown
   end
 
   def test_number_of_employees_in_department
-    setup
     a = Department.new(name: "Marketing")
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
@@ -154,21 +127,32 @@ class EmployeeReviews < Minitest::Test
     a.employees << new_employee
     a.employees << old_employee
     assert_equal 3, a.employees.length
-    teardown
   end
 
   def test_department_employee_paid_least
-    setup
-    a = Department.new(name: "Marketing")
-    xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
-    new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
-    old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
+    a = Department.create(name: "Marketing")
+    xavier = Employee.create(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
+    new_employee = Employee.create(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
+    old_employee = Employee.create(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
     a.employees << xavier
     a.employees << new_employee
     a.employees << old_employee
-    min_sal = Employee.order(:salary).limit(1)
-    assert_equal "Yvonne", min_sal.first.name
-    teardown
+    min_sal = a.employees.order(:salary).first
+    assert_equal "Yvonne", min_sal.name
+  end
+
+  def test_order_department_employees_by_name
+    names_array = []
+    a = Department.create(name: "Marketing")
+    xavier = Employee.create(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
+    new_employee = Employee.create(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
+    old_employee = Employee.create(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
+    a.employees << xavier
+    a.employees << new_employee
+    a.employees << old_employee
+    names_list = a.employees.order(:name)
+    names_list.each {|e| names_array << e.name}
+    assert_equal ["Dan", "Xavier", "Yvonne"], names_array
   end
 
   private def negative_review_one
