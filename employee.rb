@@ -1,5 +1,5 @@
-
-class Employee
+class Employee < ActiveRecord::Base
+  belongs_to :department
 
   def add_employee_review(review)
     self.review = review

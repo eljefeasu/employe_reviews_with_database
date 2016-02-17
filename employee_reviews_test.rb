@@ -1,9 +1,28 @@
 require 'minitest/autorun'
 require 'minitest/pride'
+
+require 'active_record'
+ActiveRecord::Base.establish_connection(
+  adapter:  'sqlite3',
+  database: 'development.sqlite3'
+)
+
+require './employee_department_migration.rb'
 require './department.rb'
 require './employee.rb'
 
+# This gets rid of all the migration output between your dots.
+# ActiveRecord::Migration.verbose = false
+
 class EmployeeReviews < Minitest::Test
+
+  # def setup
+  #   begin EmployeeAndDepartmentMigration.migrate(:up); rescue; end
+  # end
+  #
+  # def teardown
+  #   EmployeeAndDepartmentMigration.migrate(:down)
+  # end
 
   def test_classes_exist
     assert Department
@@ -11,91 +30,102 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_can_create_new_department
-    skip
-    a = Department.new("Marketing")
+    setup
+    a = Department.new(name: "Marketing")
     assert a
     assert_equal "Marketing", a.name
+    teardown
   end
 
   def test_can_create_new_employee
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert new_employee
+    teardown
   end
 
   def test_can_add_employee_to_a_department
-    skip
-    a = Department.new("Marketing")
+    setup
+    a = Department.new(name: "Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
-    a.add_employee(new_employee)
-    assert_equal [new_employee], a.staff
+    a.employees << new_employee
+    assert_equal [new_employee], a.employees
+    teardown
   end
 
   def test_can_get_employee_name
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal "Dan", new_employee.name
+    teardown
   end
 
   def test_can_get_employee_salary
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 50000.00, new_employee.salary
+    teardown
   end
 
   def test_can_get_a_department_name
-    skip
-    a = Department.new("Marketing")
+    setup
+    a = Department.new(name: "Marketing")
     assert_equal "Marketing", a.name
+    teardown
   end
 
   def test_total_department_salary
-    skip
-    a = Department.new("Marketing")
+    setup
+    a = Department.new(name: "Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
-    assert a.add_employee(new_employee)
-    assert a.add_employee(old_employee)
+    assert a.employees << new_employee
+    assert a.employees << old_employee
     assert_equal 90000.00, a.department_salary
+    teardown
   end
 
   def test_add_employee_review
-    skip
+    setup
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     assert xavier.add_employee_review(positive_review_one)
+    teardown
   end
 
   def test_set_employee_performance
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 4000.00)
     new_employee.set_employee_performance(true)
     old_employee.set_employee_performance(false)
     assert new_employee.satisfactory
     refute old_employee.satisfactory
+    teardown
   end
 
   def test_give_raise_by_percent
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 54000, new_employee.raise_by_percent(0.08)
+    teardown
   end
 
   def test_give_raise_by_amount
-    skip
+    setup
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 60000, new_employee.raise_by_amount(10000)
+    teardown
   end
 
   def test_department_raises_based_on_criteria
-    skip
-    a = Department.new("Marketing")
+    setup
+    a = Department.new(name: "Marketing")
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
-    a.add_employee(xavier)
-    a.add_employee(new_employee)
-    a.add_employee(old_employee)
+    a.employees << xavier
+    a.employees << new_employee
+    a.employees << old_employee
     xavier.set_employee_performance(true)
     new_employee.set_employee_performance(true)
     old_employee.set_employee_performance(false)
@@ -103,13 +133,15 @@ class EmployeeReviews < Minitest::Test
     assert_equal 70000.00, xavier.salary
     assert_equal 64000.00, new_employee.salary
     assert_equal 40000.00, old_employee.salary
+    teardown
   end
 
   def test_evaluate_employee_review
-    skip
+    setup
     xavier = Employee.new(name: 'Xavier', email: 'ProfX@marvel.com', phone: '911', salary: 70000.00)
     xavier.add_employee_review(positive_review_one)
     assert xavier.satisfactory
+    teardown
   end
 
   private def negative_review_one
