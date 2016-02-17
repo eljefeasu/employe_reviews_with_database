@@ -27,4 +27,4 @@ new_employee.add_employee_review(review)
 * Scan employee review text and evaluate an employee's performance.
 * Access an employees performance rating rating at any time.
 
-Project was estimated to take 25 hours of work, but was completed in 16 hours.
+Link to LucidChart ERD: https://www.lucidchart.com/invitations/accept/3c981a40-f421-4c9b-9616-028fa8349c6f

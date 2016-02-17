@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/pride'
-require './department'
+require './department.rb'
+require './employee.rb'
 
 class EmployeeReviews < Minitest::Test
 
@@ -10,17 +11,20 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_can_create_new_department
+    skip
     a = Department.new("Marketing")
     assert a
     assert_equal "Marketing", a.name
   end
 
   def test_can_create_new_employee
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert new_employee
   end
 
   def test_can_add_employee_to_a_department
+    skip
     a = Department.new("Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     a.add_employee(new_employee)
@@ -28,21 +32,25 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_can_get_employee_name
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal "Dan", new_employee.name
   end
 
   def test_can_get_employee_salary
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 50000.00, new_employee.salary
   end
 
   def test_can_get_a_department_name
+    skip
     a = Department.new("Marketing")
     assert_equal "Marketing", a.name
   end
 
   def test_total_department_salary
+    skip
     a = Department.new("Marketing")
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 40000.00)
@@ -52,11 +60,13 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_add_employee_review
+    skip
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     assert xavier.add_employee_review(positive_review_one)
   end
 
   def test_set_employee_performance
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     old_employee = Employee.new(name: "Yvonne", email: "Yvonne@urFired.com", phone: "919-123-4567", salary: 4000.00)
     new_employee.set_employee_performance(true)
@@ -66,16 +76,19 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_give_raise_by_percent
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 54000, new_employee.raise_by_percent(0.08)
   end
 
   def test_give_raise_by_amount
+    skip
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
     assert_equal 60000, new_employee.raise_by_amount(10000)
   end
 
   def test_department_raises_based_on_criteria
+    skip
     a = Department.new("Marketing")
     xavier = Employee.new(name: "Xavier", email: "ProfX@marvel.com", phone: "911", salary: 70000.00)
     new_employee = Employee.new(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
@@ -93,6 +106,7 @@ class EmployeeReviews < Minitest::Test
   end
 
   def test_evaluate_employee_review
+    skip
     xavier = Employee.new(name: 'Xavier', email: 'ProfX@marvel.com', phone: '911', salary: 70000.00)
     xavier.add_employee_review(positive_review_one)
     assert xavier.satisfactory
